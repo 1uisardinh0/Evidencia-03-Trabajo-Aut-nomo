@@ -3,6 +3,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//Se crea la clase pricipal del programa, se definen la ventana y los componentes de la ventana, y la lista de usuarios.
 public class VentanaLogin {
     public static final List<Usuario> usuarios= new ArrayList<>();
 
@@ -13,6 +14,7 @@ public class VentanaLogin {
     private final JPasswordField txtClave = new JPasswordField();
     private final JButton btnIngresar = new JButton("Ingresar");
 
+    //Contructor del programa que crea los objetos usuario y configura los componentes de la ventana.
     public VentanaLogin() {
 
         usuarios.add(new Usuario("Luisardinho", "1234", "Luis"));
@@ -46,11 +48,13 @@ public class VentanaLogin {
         btnIngresar.addActionListener(e -> login());
     }
 
+    //Muestra la ventana junto a sus componentes.
     public void mostrarVentana() {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
+    //Ejecución del login del programa, si el usuario ingresado esta en la lista puede entar si no muestra un mensaje.
     private void login() {
         String usuarioIngresado = txtUsuario.getText();
         String claveIngresada = new String(txtClave.getPassword());
@@ -71,6 +75,7 @@ public class VentanaLogin {
         }
     }
 
+    //Valida las credenciales del usuario viendo si está presente en la lista.
     private String validarCredenciales(String u, String p) {
         for (Usuario user : usuarios) {
             if (user.validarCredenciales(u, p)) {
@@ -79,11 +84,12 @@ public class VentanaLogin {
         }
         return "";
     }
-
+    //Abre la ventana registro donde permite al usuario poder registrarse si no lo ha realizado.
     void abrirRegistro(){
 
     }
 
+    //Inicialización del programa.
     public static void main(String[] args) {
         new VentanaLogin().mostrarVentana();
     }
