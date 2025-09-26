@@ -30,7 +30,6 @@ public class Ruleta {
 
 
     public static void crearInterfazGrafica() {
-
         frame = new JFrame("Ruleta Casino Black Cat");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
@@ -46,41 +45,37 @@ public class Ruleta {
 
         JPanel juegoPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         juegoPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
         juegoPanel.add(new JLabel("Tipo de apuesta:"));
         String[] tiposApuesta = {"Rojo (R)", "Negro (N)", "Par (P)", "Impar (I)"};
         tipoApuestaCombo = new JComboBox<>(tiposApuesta);
         juegoPanel.add(tipoApuestaCombo);
-
         juegoPanel.add(new JLabel("Monto a apostar:"));
         montoField = new JTextField("100");
         juegoPanel.add(montoField);
-
         JButton jugarButton = new JButton("Girar Ruleta");
         jugarButton.setBackground(new Color(255, 255, 255));
         jugarButton.setForeground(Color.BLACK);
         jugarButton.setFont(new Font("Arial", Font.BOLD, 16));
         jugarButton.addActionListener(new JugarButtonListener());
         juegoPanel.add(jugarButton);
-
         numeroResultadoLabel = new JLabel("00", JLabel.CENTER);
         numeroResultadoLabel.setFont(new Font("Arial", Font.BOLD, 48));
         numeroResultadoLabel.setOpaque(true);
         numeroResultadoLabel.setBackground(Color.LIGHT_GRAY);
         juegoPanel.add(numeroResultadoLabel);
-
         frame.add(juegoPanel, BorderLayout.CENTER);
+
+        // Crear un panel principal para los resultados y el estado
+        JPanel panelInferior = new JPanel(new BorderLayout());
 
         JPanel resultadosPanel = new JPanel(new GridLayout(1, 2, 10, 10));
         resultadosPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
         resultadoArea = new JTextArea(8, 30);
         resultadoArea.setEditable(false);
         resultadoArea.setFont(new Font("Consolas", Font.PLAIN, 12));
         JScrollPane resultadoScroll = new JScrollPane(resultadoArea);
         resultadoScroll.setBorder(BorderFactory.createTitledBorder("Últimos Resultados"));
         resultadosPanel.add(resultadoScroll);
-
         estadisticasArea = new JTextArea(8, 30);
         estadisticasArea.setEditable(false);
         estadisticasArea.setFont(new Font("Consolas", Font.PLAIN, 12));
@@ -88,28 +83,25 @@ public class Ruleta {
         estadisticasScroll.setBorder(BorderFactory.createTitledBorder("Estadísticas"));
         resultadosPanel.add(estadisticasScroll);
 
-        frame.add(resultadosPanel, BorderLayout.SOUTH);
+        panelInferior.add(resultadosPanel, BorderLayout.CENTER);
 
         estadoResultadoLabel = new JLabel("Bienvenido al Casino Black Cat! Realice su apuesta.", JLabel.CENTER);
         estadoResultadoLabel.setFont(new Font("Arial", Font.BOLD, 14));
         estadoResultadoLabel.setOpaque(true);
         estadoResultadoLabel.setBackground(Color.YELLOW);
-        frame.add(estadoResultadoLabel, BorderLayout.SOUTH);
+        panelInferior.add(estadoResultadoLabel, BorderLayout.SOUTH);
+
+        frame.add(panelInferior, BorderLayout.SOUTH);
 
         JPanel botonesPanel = new JPanel();
-        JButton estadisticasButton = new JButton("Ver Estadísticas");
-        estadisticasButton.addActionListener(new EstadisticasButtonListener());
-        botonesPanel.add(estadisticasButton);
 
         JButton limpiarButton = new JButton("Limpiar Historial");
         limpiarButton.addActionListener(new LimpiarButtonListener());
         botonesPanel.add(limpiarButton);
-
         frame.add(botonesPanel, BorderLayout.EAST);
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
         actualizarEstadisticas();
     }
 
@@ -250,23 +242,26 @@ public class Ruleta {
         }
 
         double porcentajeAciertos = (double) totalAciertos / totalRondas * 100;
-        int gananciaNeta = (totalAciertos * 2) - totalApostado; // Se paga el doble al ganar
+        int gananciaNeta = (totalAciertos * 2) - totalApostado;
 
-        String estadisticas = String.format(
-                "Rondas jugadas: %d\n" +
-                        "Total apostado: $%d\n" +
-                        "Total de aciertos: %d\n" +
-                        "Porcentaje de aciertos: %.2f%%\n" +
-                        "Ganancia/Pérdida neta: $%d\n\n" +
-                        "Últimos 5 números:\n",
+        StringBuilder estadisticas = new StringBuilder(String.format(
+                """
+                        Rondas jugadas: %d
+                        Total apostado: $%d
+                        Total de aciertos: %d
+                        Porcentaje de aciertos: %.2f%%
+                        Ganancia/Pérdida neta: $%d
+                        
+                        Últimos 5 números:
+                        """,
                 totalRondas, totalApostado, totalAciertos, porcentajeAciertos, gananciaNeta
-        );
+        ));
 
         int inicio = Math.max(0, historialSize - 5);
         for (int i = inicio; i < historialSize; i++) {
-            estadisticas += String.format("Ronda %d: %02d\n", i + 1, historialNumeros[i]);
+            estadisticas.append(String.format("Ronda %d: %02d\n", i + 1, historialNumeros[i]));
         }
 
-        estadisticasArea.setText(estadisticas);
+        estadisticasArea.setText(estadisticas.toString());
     }
 }
