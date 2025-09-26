@@ -137,7 +137,7 @@ public class Ruleta {
         }
 
         double porcentajeAciertos = (double) totalAciertos / totalRondas * 100;
-        int gananciaNeta = (totalAciertos * 2) - totalApostado; // Se paga el doble al ganar
+        int gananciaNeta = (totalAciertos * 2) - totalApostado;
 
         System.out.println("\n--- Estadísticas ---");
         System.out.println("Rondas jugadas: " + totalRondas);
