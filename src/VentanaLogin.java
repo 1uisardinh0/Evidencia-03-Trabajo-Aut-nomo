@@ -13,12 +13,13 @@ public class VentanaLogin {
     private final JLabel lblClave = new JLabel("Clave:");
     private final JPasswordField txtClave = new JPasswordField();
     private final JButton btnIngresar = new JButton("Ingresar");
+    private final JButton btnRegistro = new JButton("Registrar");
 
     //Contructor del programa que crea los objetos usuario y configura los componentes de la ventana.
     public VentanaLogin() {
 
         usuarios.add(new Usuario("Luisardinho", "1234", "Luis"));
-        usuarios.add(new Usuario("GunnarEnderson", "GunnarTheBest", "Gunnar Enderson"));
+        usuarios.add(new Usuario("GunnarHenderson", "GunnarTheBest", "Gunnar Henderson"));
         usuarios.add(new Usuario("JackHoliday", "Jh1122", "Jackson Holidays"));
 
         frame.setSize(350, 350);
@@ -36,7 +37,10 @@ public class VentanaLogin {
         txtClave.setBounds(150, 100, 150, 25);
 
         btnIngresar.setFont(new Font("Tahoma", Font.BOLD, 10));
-        btnIngresar.setBounds(125, 175, 100, 30);
+        btnIngresar.setBounds(50, 175, 100, 30);
+
+        btnRegistro.setFont(new Font("Tahoma", Font.BOLD, 10));
+        btnRegistro.setBounds(200, 175, 100, 30);
 
         frame.add(lblUsuario);
         frame.add(txtUsuario);
@@ -44,8 +48,10 @@ public class VentanaLogin {
         frame.add(txtClave);
         frame.add(new JLabel());
         frame.add(btnIngresar);
+        frame.add(btnRegistro);
 
         btnIngresar.addActionListener(e -> login());
+        btnRegistro.addActionListener(e -> abrirRegistro());
     }
 
     //Muestra la ventana junto a sus componentes.
@@ -84,9 +90,8 @@ public class VentanaLogin {
         }
         return "";
     }
-    //Abre la ventana registro donde permite al usuario poder registrarse si no lo ha realizado.
+    //Abre la ventana registro donde permite al usuario poder registrarse si no lo ha hecho.
     void abrirRegistro(){
-
     }
 
     //Inicialización del programa.
