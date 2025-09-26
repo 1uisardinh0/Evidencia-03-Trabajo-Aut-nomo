@@ -1,5 +1,8 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Random;
-import java.util.Scanner;
 
 public class Ruleta {
 
@@ -15,73 +18,163 @@ public class Ruleta {
     public static Random rng = new Random();
     public static int[] numerosRojos = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
 
+    private static JFrame frame;
+    private static JTextArea resultadoArea;
+    private static JTextArea estadisticasArea;
+    private static JComboBox<String> tipoApuestaCombo;
+    private static JTextField montoField;
+    private static JLabel numeroResultadoLabel;
+    private static JLabel estadoResultadoLabel;
+
     public static void main(String[] args) {
-        menu();
+        crearInterfazGrafica();
     }
 
-    public static void menu() {
-        Scanner in = new Scanner(System.in);
-        int opcion;
-        do {
-            mostrarMenu();
-            opcion = leerOpcion(in);
-            ejecutarOpcion(opcion, in);
-        } while (opcion != 3);
-        in.close();
+    public static void crearInterfazGrafica() {
+
+        frame = new JFrame("Ruleta Casino Black Cat");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+        frame.setSize(800, 600);
+
+        JPanel tituloPanel = new JPanel();
+        tituloPanel.setBackground(new Color(220, 20, 60));
+        JLabel tituloLabel = new JLabel("RULETA CASINO BLACK CAT");
+        tituloLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        tituloLabel.setForeground(Color.WHITE);
+        tituloPanel.add(tituloLabel);
+        frame.add(tituloPanel, BorderLayout.NORTH);
+
+        JPanel juegoPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        juegoPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        juegoPanel.add(new JLabel("Tipo de apuesta:"));
+        String[] tiposApuesta = {"Rojo (R)", "Negro (N)", "Par (P)", "Impar (I)"};
+        tipoApuestaCombo = new JComboBox<>(tiposApuesta);
+        juegoPanel.add(tipoApuestaCombo);
+
+        juegoPanel.add(new JLabel("Monto a apostar:"));
+        montoField = new JTextField("100");
+        juegoPanel.add(montoField);
+
+        JButton jugarButton = new JButton("Girar Ruleta");
+        jugarButton.setBackground(new Color(30, 144, 255)); // Azul
+        jugarButton.setForeground(Color.WHITE);
+        jugarButton.setFont(new Font("Arial", Font.BOLD, 16));
+        jugarButton.addActionListener(new JugarButtonListener());
+        juegoPanel.add(jugarButton);
+
+        numeroResultadoLabel = new JLabel("00", JLabel.CENTER);
+        numeroResultadoLabel.setFont(new Font("Arial", Font.BOLD, 48));
+        numeroResultadoLabel.setOpaque(true);
+        numeroResultadoLabel.setBackground(Color.LIGHT_GRAY);
+        juegoPanel.add(numeroResultadoLabel);
+
+        frame.add(juegoPanel, BorderLayout.CENTER);
+
+        JPanel resultadosPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        resultadosPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        resultadoArea = new JTextArea(8, 30);
+        resultadoArea.setEditable(false);
+        resultadoArea.setFont(new Font("Consolas", Font.PLAIN, 12));
+        JScrollPane resultadoScroll = new JScrollPane(resultadoArea);
+        resultadoScroll.setBorder(BorderFactory.createTitledBorder("Últimos Resultados"));
+        resultadosPanel.add(resultadoScroll);
+
+        estadisticasArea = new JTextArea(8, 30);
+        estadisticasArea.setEditable(false);
+        estadisticasArea.setFont(new Font("Consolas", Font.PLAIN, 12));
+        JScrollPane estadisticasScroll = new JScrollPane(estadisticasArea);
+        estadisticasScroll.setBorder(BorderFactory.createTitledBorder("Estadísticas"));
+        resultadosPanel.add(estadisticasScroll);
+
+        frame.add(resultadosPanel, BorderLayout.SOUTH);
+
+        estadoResultadoLabel = new JLabel("Bienvenido al Casino Black Cat! Realice su apuesta.", JLabel.CENTER);
+        estadoResultadoLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        estadoResultadoLabel.setOpaque(true);
+        estadoResultadoLabel.setBackground(Color.YELLOW);
+        frame.add(estadoResultadoLabel, BorderLayout.SOUTH);
+
+        JPanel botonesPanel = new JPanel();
+        JButton estadisticasButton = new JButton("Ver Estadísticas");
+        estadisticasButton.addActionListener(new EstadisticasButtonListener());
+        botonesPanel.add(estadisticasButton);
+
+        JButton limpiarButton = new JButton("Limpiar Historial");
+        limpiarButton.addActionListener(new LimpiarButtonListener());
+        botonesPanel.add(limpiarButton);
+
+        frame.add(botonesPanel, BorderLayout.EAST);
+
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        actualizarEstadisticas();
     }
 
-    public static void mostrarMenu() {
-        System.out.println("\n=== RULETA CASINO BLACK CAT ===");
-        System.out.println("1. Iniciar ronda");
-        System.out.println("2. Ver estadísticas");
-        System.out.println("3. Salir");
-        System.out.print("Seleccione una opción: ");
-    }
+    private static class JugarButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (historialSize >= MAX_HISTORIAL) {
+                JOptionPane.showMessageDialog(frame, "Límite de rondas alcanzado.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
 
-    public static int leerOpcion(Scanner in) {
-        return in.nextInt();
-    }
+            try {
+                int selectedIndex = tipoApuestaCombo.getSelectedIndex();
+                char tipo = switch (selectedIndex) {
+                    case 0 -> 'R';
+                    case 1 -> 'N';
+                    case 2 -> 'P';
+                    case 3 -> 'I';
+                    default -> ' ';
+                };
 
-    public static void ejecutarOpcion(int opcion, Scanner in) {
-        switch (opcion) {
-            case 1:
-                iniciarRonda(in);
-                break;
-            case 2:
-                mostrarEstadisticas();
-                break;
-            case 3:
-                System.out.println("¡Gracias por jugar!");
-                break;
-            default:
-                System.out.println("Opción no válida.");
+                int monto = Integer.parseInt(montoField.getText());
+                if (monto <= 0) {
+                    JOptionPane.showMessageDialog(frame, "El monto debe ser mayor a 0.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int numero = girarRuleta();
+                boolean acierto = evaluarResultado(numero, tipo);
+
+                registrarResultado(numero, monto, acierto);
+                mostrarResultadoEnGUI(numero, tipo, monto, acierto);
+                actualizarEstadisticas();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, "Por favor ingrese un monto válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
-    public static void iniciarRonda(Scanner in) {
-        if (historialSize >= MAX_HISTORIAL) {
-            System.out.println("Límite de rondas alcanzado.");
-            return;
+    private static class EstadisticasButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            actualizarEstadisticas();
         }
-
-        char tipo = leerTipoApuesta(in);
-        System.out.print("Ingrese monto a apostar: ");
-        int monto = in.nextInt();
-
-        int numero = girarRuleta();
-        boolean acierto = evaluarResultado(numero, tipo);
-
-        registrarResultado(numero, monto, acierto);
-        mostrarResultado(numero, tipo, monto, acierto);
     }
 
-    public static char leerTipoApuesta(Scanner in) {
-        char tipo;
-        do {
-            System.out.print("Seleccione tipo de apuesta (R: Rojo, N: Negro, P: Par, I: Impar): ");
-            tipo = in.next().toUpperCase().charAt(0);
-        } while (tipo != 'R' && tipo != 'N' && tipo != 'P' && tipo != 'I');
-        return tipo;
+    private static class LimpiarButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int confirm = JOptionPane.showConfirmDialog(frame,
+                    "¿Está seguro de que desea limpiar todo el historial?",
+                    "Confirmar", JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                historialSize = 0;
+                resultadoArea.setText("");
+                actualizarEstadisticas();
+                estadoResultadoLabel.setText("Historial limpiado. Listo para nuevas apuestas.");
+                estadoResultadoLabel.setBackground(Color.YELLOW);
+                numeroResultadoLabel.setText("00");
+                numeroResultadoLabel.setBackground(Color.LIGHT_GRAY);
+            }
+        }
     }
 
     public static int girarRuleta() {
@@ -89,7 +182,7 @@ public class Ruleta {
     }
 
     public static boolean evaluarResultado(int numero, char tipo) {
-        if (numero == 0) return false; // El cero no es rojo/negro/par/impar
+        if (numero == 0) return false;
 
         return switch (tipo) {
             case 'R' -> esRojo(numero);
@@ -114,16 +207,37 @@ public class Ruleta {
         historialSize++;
     }
 
-    public static void mostrarResultado(int numero, char tipo, int monto, boolean acierto) {
-        System.out.println("\n--- Resultado de la ronda ---");
-        System.out.println("Número: " + numero);
-        System.out.println("Apuesta: " + tipo + " | Monto: " + monto);
-        System.out.println("Resultado: " + (acierto ? "GANÓ" : "PERDIÓ"));
+    public static void mostrarResultadoEnGUI(int numero, char tipo, int monto, boolean acierto) {
+        numeroResultadoLabel.setText(String.format("%02d", numero));
+
+        if (acierto) {
+            numeroResultadoLabel.setBackground(Color.GREEN);
+            estadoResultadoLabel.setText("¡FELICIDADES! ¡GANÓ LA APUESTA!");
+            estadoResultadoLabel.setBackground(Color.GREEN);
+        } else {
+            numeroResultadoLabel.setBackground(Color.RED);
+            estadoResultadoLabel.setText("Lo siento, perdió esta apuesta. ¡Intente de nuevo!");
+            estadoResultadoLabel.setBackground(Color.RED);
+        }
+
+        String tipoTexto = switch (tipo) {
+            case 'R' -> "Rojo";
+            case 'N' -> "Negro";
+            case 'P' -> "Par";
+            case 'I' -> "Impar";
+            default -> "";
+        };
+
+        String resultado = String.format("Ronda %d: N°%02d | %s | $%d | %s\n",
+                historialSize, numero, tipoTexto, monto, acierto ? "GANÓ" : "PERDIÓ");
+
+        resultadoArea.append(resultado);
+        resultadoArea.setCaretPosition(resultadoArea.getDocument().getLength()); // Auto-scroll
     }
 
-    public static void mostrarEstadisticas() {
+    public static void actualizarEstadisticas() {
         if (historialSize == 0) {
-            System.out.println("No hay rondas jugadas.");
+            estadisticasArea.setText("No hay rondas jugadas.");
             return;
         }
 
@@ -137,13 +251,23 @@ public class Ruleta {
         }
 
         double porcentajeAciertos = (double) totalAciertos / totalRondas * 100;
-        int gananciaNeta = (totalAciertos * 2) - totalApostado;
+        int gananciaNeta = (totalAciertos * 2) - totalApostado; // Se paga el doble al ganar
 
-        System.out.println("\n--- Estadísticas ---");
-        System.out.println("Rondas jugadas: " + totalRondas);
-        System.out.println("Total apostado: " + totalApostado);
-        System.out.println("Total de aciertos: " + totalAciertos);
-        System.out.printf("Porcentaje de aciertos: %.2f%%\n", porcentajeAciertos);
-        System.out.println("Ganancia/Pérdida neta: " + gananciaNeta);
+        String estadisticas = String.format(
+                "Rondas jugadas: %d\n" +
+                        "Total apostado: $%d\n" +
+                        "Total de aciertos: %d\n" +
+                        "Porcentaje de aciertos: %.2f%%\n" +
+                        "Ganancia/Pérdida neta: $%d\n\n" +
+                        "Últimos 5 números:\n",
+                totalRondas, totalApostado, totalAciertos, porcentajeAciertos, gananciaNeta
+        );
+
+        int inicio = Math.max(0, historialSize - 5);
+        for (int i = inicio; i < historialSize; i++) {
+            estadisticas += String.format("Ronda %d: %02d\n", i + 1, historialNumeros[i]);
+        }
+
+        estadisticasArea.setText(estadisticas);
     }
 }
