@@ -1,3 +1,7 @@
+package Vista;
+
+import Modelo.Usuario;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -8,7 +12,7 @@ public class VentanaLogin {
     public static final List<Usuario> usuarios= new ArrayList<>();
 
     private final JFrame frame = new JFrame("Login - Casino Black Cat");
-    private final JLabel lblUsuario = new JLabel("Usuario:");
+    private final JLabel lblUsuario = new JLabel("Modelo.Usuario:");
     private final JTextField txtUsuario = new JTextField();
     private final JLabel lblClave = new JLabel("Clave:");
     private final JPasswordField txtClave = new JPasswordField();
@@ -76,7 +80,7 @@ public class VentanaLogin {
 
         else {
             JOptionPane.showMessageDialog(frame,
-                    "Usuario o clave incorrectos",
+                    "Modelo.Usuario o clave incorrectos",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -92,11 +96,6 @@ public class VentanaLogin {
     }
     //Abre la ventana registro donde permite al usuario poder registrarse si no lo ha hecho.
     void abrirRegistro(){
-    }
-
-    //Inicialización del programa.
-    public static void main(String[] args) {
-        new VentanaLogin().mostrarVentana();
     }
 }
 

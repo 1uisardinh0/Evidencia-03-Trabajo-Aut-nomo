@@ -1,3 +1,5 @@
+package Modelo;
+
 public class Usuario {
     private final String username;
     private final String password;

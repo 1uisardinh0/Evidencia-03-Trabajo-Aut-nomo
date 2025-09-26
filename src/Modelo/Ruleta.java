@@ -1,3 +1,5 @@
+package Modelo;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -32,7 +34,7 @@ public class Ruleta {
 
     public static void crearInterfazGrafica() {
 
-        frame = new JFrame("Ruleta Casino Black Cat");
+        frame = new JFrame("Modelo.Ruleta Casino Black Cat");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.setSize(800, 600);
@@ -57,7 +59,7 @@ public class Ruleta {
         montoField = new JTextField("100");
         juegoPanel.add(montoField);
 
-        JButton jugarButton = new JButton("Girar Ruleta");
+        JButton jugarButton = new JButton("Girar Modelo.Ruleta");
         jugarButton.setBackground(new Color(30, 144, 255)); // Azul
         jugarButton.setForeground(Color.WHITE);
         jugarButton.setFont(new Font("Arial", Font.BOLD, 16));
