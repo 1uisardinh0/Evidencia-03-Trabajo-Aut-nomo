@@ -28,19 +28,16 @@ public class Ruleta {
     private static JLabel numeroResultadoLabel;
     private static JLabel estadoResultadoLabel;
 
-    public static void main(String[] args) {
-        crearInterfazGrafica();
-    }
 
     public static void crearInterfazGrafica() {
 
-        frame = new JFrame("Modelo.Ruleta Casino Black Cat");
+        frame = new JFrame("Ruleta Casino Black Cat");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.setSize(800, 600);
 
         JPanel tituloPanel = new JPanel();
-        tituloPanel.setBackground(new Color(220, 20, 60));
+        tituloPanel.setBackground(new Color(128, 128, 128));
         JLabel tituloLabel = new JLabel("RULETA CASINO BLACK CAT");
         tituloLabel.setFont(new Font("Arial", Font.BOLD, 24));
         tituloLabel.setForeground(Color.WHITE);
@@ -59,9 +56,9 @@ public class Ruleta {
         montoField = new JTextField("100");
         juegoPanel.add(montoField);
 
-        JButton jugarButton = new JButton("Girar Modelo.Ruleta");
-        jugarButton.setBackground(new Color(30, 144, 255)); // Azul
-        jugarButton.setForeground(Color.WHITE);
+        JButton jugarButton = new JButton("Girar Ruleta");
+        jugarButton.setBackground(new Color(255, 255, 255));
+        jugarButton.setForeground(Color.BLACK);
         jugarButton.setFont(new Font("Arial", Font.BOLD, 16));
         jugarButton.addActionListener(new JugarButtonListener());
         juegoPanel.add(jugarButton);

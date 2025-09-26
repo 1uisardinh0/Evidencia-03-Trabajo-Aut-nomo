@@ -1,5 +1,6 @@
 package Vista;
 
+import Modelo.Ruleta;
 import Modelo.Usuario;
 
 import javax.swing.*;
@@ -76,6 +77,7 @@ public class VentanaLogin {
                     "Bienvenido, " + nombreUsuario + "!",
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
             frame.dispose();
+            iniciarJuego();
         }
 
         else {
@@ -96,6 +98,10 @@ public class VentanaLogin {
     }
     //Abre la ventana registro donde permite al usuario poder registrarse si no lo ha hecho.
     void abrirRegistro(){
+    }
+
+    private void iniciarJuego(){
+        Ruleta.crearInterfazGrafica();
     }
 }
 
