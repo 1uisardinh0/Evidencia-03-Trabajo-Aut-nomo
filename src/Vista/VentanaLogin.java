@@ -12,7 +12,7 @@ public class VentanaLogin {
     public static final List<Usuario> usuarios= new ArrayList<>();
 
     private final JFrame frame = new JFrame("Login - Casino Black Cat");
-    private final JLabel lblUsuario = new JLabel("Modelo.Usuario:");
+    private final JLabel lblUsuario = new JLabel("Usuario:");
     private final JTextField txtUsuario = new JTextField();
     private final JLabel lblClave = new JLabel("Clave:");
     private final JPasswordField txtClave = new JPasswordField();
