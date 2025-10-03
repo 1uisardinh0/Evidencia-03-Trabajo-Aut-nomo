@@ -1,107 +1,112 @@
 package Vista;
 
-import Modelo.Ruleta;
-import Modelo.Usuario;
-
+import controller.SesionController;
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
-//Se crea la clase pricipal del programa, se definen la ventana y los componentes de la ventana, y la lista de usuarios.
+
 public class VentanaLogin {
-    public static final List<Usuario> usuarios= new ArrayList<>();
+    // Dimensiones de la ventana
+    public static final int WIDTH = 350;
+    public static final int HEIGHT = 200;
 
-    private final JFrame frame = new JFrame("Login - Casino Black Cat");
-    private final JLabel lblUsuario = new JLabel("Usuario:");
-    private final JTextField txtUsuario = new JTextField();
-    private final JLabel lblClave = new JLabel("Clave:");
-    private final JPasswordField txtClave = new JPasswordField();
+    private final JFrame frame = new JFrame("Login Casino Black Cat");
+    private final SesionController sesionController;
+    
+    // Componentes de la Interfaz (UI)
+    private final JTextField txtUsuario = new JTextField(15);
+    private final JPasswordField txtClave = new JPasswordField(15);
     private final JButton btnIngresar = new JButton("Ingresar");
     private final JButton btnRegistro = new JButton("Registrar");
 
-    //Contructor del programa que crea los objetos usuario y configura los componentes de la ventana.
-    public VentanaLogin() {
-
-        usuarios.add(new Usuario("Luisardinho", "1234", "Luis"));
-        usuarios.add(new Usuario("GunnarHenderson", "GunnarTheBest", "Gunnar Henderson"));
-        usuarios.add(new Usuario("JackHoliday", "Jh1122", "Jackson Holidays"));
-
-        frame.setSize(350, 350);
-        frame.setLayout(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        lblUsuario.setFont(new Font("Tahoma", Font.BOLD, 10));
-        lblUsuario.setBounds(50, 50, 100, 20);
-
-        txtUsuario.setBounds(150, 50, 150, 25);
-
-        lblClave.setFont(new Font("Tahoma", Font.BOLD, 10));
-        lblClave.setBounds(50, 100, 100, 20);
-
-        txtClave.setBounds(150, 100, 150, 25);
-
-        btnIngresar.setFont(new Font("Tahoma", Font.BOLD, 10));
-        btnIngresar.setBounds(50, 175, 100, 30);
-
-        btnRegistro.setFont(new Font("Tahoma", Font.BOLD, 10));
-        btnRegistro.setBounds(200, 175, 100, 30);
-
-        frame.add(lblUsuario);
-        frame.add(txtUsuario);
-        frame.add(lblClave);
-        frame.add(txtClave);
-        frame.add(new JLabel());
-        frame.add(btnIngresar);
-        frame.add(btnRegistro);
-
-        btnIngresar.addActionListener(e -> login());
-        btnRegistro.addActionListener(e -> abrirRegistro());
+    //Constructor
+    public VentanaLogin(SesionController sesionController) {
+        this.sesionController = sesionController;
+        inicializarComponentes();
+        configurarVentana();
     }
 
-    //Muestra la ventana junto a sus componentes.
+    private void inicializarComponentes() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Fila 1: Usuario
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(new JLabel("Usuario:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 0; gbc.gridwidth = 2;
+        panel.add(txtUsuario, gbc);
+
+        // Fila 2: Clave
+        gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 1;
+        panel.add(new JLabel("Clave:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 1; gbc.gridwidth = 2;
+        panel.add(txtClave, gbc);
+
+        // Fila 3: Botones
+        gbc.gridx = 1; gbc.gridy = 2; gbc.gridwidth = 1;
+        panel.add(btnIngresar, gbc);
+        gbc.gridx = 2; gbc.gridy = 2;
+        panel.add(btnRegistro, gbc);
+
+        frame.add(panel);
+
+        // Eventos: Delegan la acción al método correspondiente
+        btnIngresar.addActionListener(e -> intentarLogin());
+        btnRegistro.addActionListener(e -> abrirVentanaRegistro());
+    }
+
+    private void configurarVentana() {
+        frame.setSize(WIDTH, HEIGHT);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+    }
+    
     public void mostrarVentana() {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
-    //Ejecución del login del programa, si el usuario ingresado esta en la lista puede entar si no muestra un mensaje.
-    private void login() {
-        String usuarioIngresado = txtUsuario.getText();
-        String claveIngresada = new String(txtClave.getPassword());
+    private void intentarLogin() {
+        String u = txtUsuario.getText();
+        String p = new String(txtClave.getPassword()); 
 
-        String nombreUsuario = validarCredenciales(usuarioIngresado, claveIngresada);
-
-        if (!nombreUsuario.isEmpty()) {
-            JOptionPane.showMessageDialog(frame,
-                    "Bienvenido, " + nombreUsuario + "!",
-                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            frame.dispose();
-            iniciarJuego();
-        }
-
-        else {
-            JOptionPane.showMessageDialog(frame,
-                    "Modelo.Usuario o clave incorrectos",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+        // 1. El Controlador gestiona la sesión
+        if (sesionController.iniciarSesion(u, p)) {
+            // Caso de éxito: El controlador conoce el usuario
+            mostrarMensajeExito();
+            
+            // 2. Abrir la siguiente Vista (Menú)
+            VentanaMenu menu = new VentanaMenu(sesionController); 
+            menu.mostrarVentana();
+            
+            frame.dispose(); // Cierra el login
+        } else {
+            mostrarMensajeError();
         }
     }
-
-    //Valida las credenciales del usuario viendo si está presente en la lista.
-    private String validarCredenciales(String u, String p) {
-        for (Usuario user : usuarios) {
-            if (user.validarCredenciales(u, p)) {
-                return user.getNombre();
-            }
-        }
-        return "";
+    
+    private void abrirVentanaRegistro() {
+        // Abre la ventana de registro, pasándole el mismo controlador
+        new VentanaRegistro(sesionController, this).mostrarVentana();
+        frame.setVisible(false);
     }
-    //Abre la ventana registro donde permite al usuario poder registrarse si no lo ha hecho.
-    void abrirRegistro(){
+    
+    // Métodos para mostrar mensajes a la vista
+    private void mostrarMensajeExito() {
+        JOptionPane.showMessageDialog(frame, 
+            "¡Ingreso exitoso!\nBienvenido/a " + sesionController.getNombreUsuario(), 
+            "Login OK", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private void mostrarMensajeError() {
+        JOptionPane.showMessageDialog(frame, 
+            "Credenciales incorrectas. Intente de nuevo.", 
+            "Error de Login", JOptionPane.ERROR_MESSAGE);
     }
 
-    private void iniciarJuego(){
-        Ruleta.crearInterfazGrafica();
+    public JFrame getFrame() {
+        return frame;
     }
 }
-
