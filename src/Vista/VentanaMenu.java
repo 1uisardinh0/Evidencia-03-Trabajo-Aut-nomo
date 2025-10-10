@@ -29,11 +29,11 @@ public class VentanaMenu {
     private void inicializarComponentes() {
         frame.setLayout(new BorderLayout());
 
-        // 1. Panel Lateral: Menú de Navegación (Oeste)
+        //Menú de Navegación.
         JPanel panelMenu = crearPanelMenu();
         frame.add(panelMenu, BorderLayout.WEST);
         
-        // 2. Panel Central con CardLayout para cambiar vistas (Centro)
+        //Panel Central con CardLayout para cambiar vistas.
         panelCentral = new JPanel(cardLayout);
         panelCentral.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -42,7 +42,7 @@ public class VentanaMenu {
         
         frame.add(panelCentral, BorderLayout.CENTER);
         
-        // 3. Panel Inferior: Saldo (Sur)
+        //Panel Inferior: Saldo.
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         lblSaldo = new JLabel();
         panelInferior.add(lblSaldo);
@@ -52,9 +52,7 @@ public class VentanaMenu {
         cardLayout.show(panelCentral, "Bienvenida");
     }
     
-    /**
-     * Crea el panel lateral con los botones de navegación.
-     */
+    //Crea el panel lateral con los botones de navegación.
     private JPanel crearPanelMenu() {
         JPanel panelMenu = new JPanel();
         panelMenu.setLayout(new BoxLayout(panelMenu, BoxLayout.Y_AXIS));
@@ -134,7 +132,7 @@ public class VentanaMenu {
         gbc.gridy = 1; 
         panel.add(separator, gbc);
 
-        // Sección 1: Actualizar Nombre
+        //Actualizar Nombre.
         JLabel lblNombre = new JLabel("Nombre Completo:");
         JTextField txtNombre = new JTextField(sesionController.getNombreUsuario(), 20);
         JButton btnActualizarNombre = new JButton("Actualizar Nombre");
@@ -143,7 +141,7 @@ public class VentanaMenu {
         gbc.gridx = 1; gbc.gridy = 2; gbc.gridwidth = 1; panel.add(txtNombre, gbc);
         gbc.gridx = 2; gbc.gridy = 2; gbc.gridwidth = 1; panel.add(btnActualizarNombre, gbc);
         
-        // Sección 2: Recarga de Saldo
+        //Recarga de Saldo.
         JLabel lblRecarga = new JLabel("Monto a Recargar:");
         JTextField txtRecarga = new JTextField("1000");
         JButton btnRecargarSaldo = new JButton("Recargar");
@@ -152,7 +150,7 @@ public class VentanaMenu {
         gbc.gridx = 1; gbc.gridy = 3; gbc.gridwidth = 1; panel.add(txtRecarga, gbc);
         gbc.gridx = 2; gbc.gridy = 3; gbc.gridwidth = 1; panel.add(btnRecargarSaldo, gbc);
 
-        // Eventos de Perfil
+        //Eventos de Perfil
         btnActualizarNombre.addActionListener(e -> actualizarNombre(txtNombre.getText()));
         btnRecargarSaldo.addActionListener(e -> recargarSaldo(txtRecarga.getText()));
 
@@ -171,15 +169,15 @@ public class VentanaMenu {
     }
 
     private void actualizarSaldo() {
-        // La vista consulta el saldo al controlador de sesión
+        //La vista consulta el saldo al controlador de sesión.
         lblSaldo.setText(String.format("Saldo: $%,d", sesionController.getSaldoActual())); 
     }
 
     private void actualizarNombre(String nuevoNombre) {
-        // El controlador valida y actualiza el Modelo (Usuario)
+        //El controlador valida y actualiza el usuario.
         if (sesionController.setNombreUsuario(nuevoNombre)) {
             JOptionPane.showMessageDialog(frame, "Nombre actualizado con éxito.");
-            // Refrescar el panel de bienvenida y el menú si es necesario
+            //Refrescar el panel de bienvenida y el menú si es necesario.
             frame.remove(panelCentral);
             panelCentral = new JPanel(cardLayout);
             panelCentral.add(crearPanelBienvenida(), "Bienvenida");
@@ -195,9 +193,9 @@ public class VentanaMenu {
     private void recargarSaldo(String montoStr) {
         try {
             int monto = Integer.parseInt(montoStr);
-            // La vista llama al método de negocio del controlador de ruleta
+            //La vista llama al método de negocio del controlador de ruleta.
             if (ruletaController.recargarSaldo(monto)) {
-                actualizarSaldo(); // Refresca la vista del saldo
+                actualizarSaldo(); //Refresca la vista del saldo.
                 JOptionPane.showMessageDialog(frame, String.format("Se recargó $%,d.", monto));
             } else {
                 JOptionPane.showMessageDialog(frame, "Monto de recarga debe ser positivo.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -209,40 +207,24 @@ public class VentanaMenu {
     
 
     private void abrirVentanaJuego() {
-        // Pasa el controlador de Ruleta a la vista de juego
+        //Pasa el controlador de Ruleta a la vista de juego.
         new VentanaRuleta(ruletaController, this).mostrarVentana();
-        frame.setVisible(false); // Oculta el menú
+        frame.setVisible(false); //Oculta el menú.
     }
 
     private void mostrarHistorial() {
-        // Construye un resumen simple del historial
-        StringBuilder sb = new StringBuilder("Historial de Rondas:\n\n");
-        int contador = 1;
-        
-        // El controlador de ruleta proporciona la lista de objetos Resultado
-        for (Modelo.Resultado r : ruletaController.getHistorialResultados()) {
-            String color = ruletaController.obtenerColor(r.getNumeroRuleta());
-            String resultado = r.isAcierto() ? "GANÓ" : "PERDIÓ";
-            
-            sb.append(String.format("%d. Número: %d (%s) | Apuesta: %s ($%,d) | %s\n", 
-                contador++, r.getNumeroRuleta(), color, r.getTipoApuesta().name(), r.getMontoApostado(), resultado));
-        }
-        
-        // Muestra el historial y el saldo
-        sb.append("\nSaldo Actual: $").append(sesionController.getSaldoActual());
-
-        JOptionPane.showMessageDialog(frame, new JScrollPane(new JTextArea(sb.toString(), 20, 50)),
-            "Historial y Estadísticas", JOptionPane.INFORMATION_MESSAGE);
+        new VentanaHistorial(ruletaController, this).mostrarVentana();
+        frame.setVisible(false); //Para ocultar el menú principal.
     }
     
     private void cerrarSesion() {
         sesionController.cerrarSesion();
-        frame.dispose(); // Cierra el menú
-        // Vuelve a abrir una nueva instancia del Login (que ya conoce el controlador)
+        frame.dispose(); //Cierra el menú.
+        //Vuelve a abrir una nueva instancia del Login que ya conoce el controlador.
         new VentanaLogin(sesionController).mostrarVentana(); 
     }
     
-    // Getter usado por VentanaRuleta para regresar al menú
+    //Getter para regresar al menú.
     public JFrame getFrame() {
         return frame;
     }
