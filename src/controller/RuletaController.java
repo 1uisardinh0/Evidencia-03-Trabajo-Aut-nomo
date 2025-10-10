@@ -9,10 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RuletaController {
-    private  Ruleta ruleta;
-    private List<Resultado> historialResultados = new ArrayList<>();
-    
-    public RuletaController(Usuario usuario){
+    private Ruleta ruleta;
+    private Usuario usuario; // Referencia al Usuario actual
+
+    public RuletaController(Usuario usuario) {
+        this.usuario = usuario;
         this.ruleta = usuario.getRuleta();
     }
 
@@ -20,17 +21,18 @@ public class RuletaController {
         if (monto <= 0 || monto > ruleta.getSaldo()) {
             throw new IllegalArgumentException("Monto inválido o insuficiente.");
         }
-        //Lógica del Modelo
+
+        //Lógica y Actualización de Saldo
         int numeroRuleta = ruleta.girar();
         boolean acierto = ruleta.evaluarResultado(numeroRuleta, tipo);
-        
-        // 2. Actualización del Modelo
         ruleta.actualizarSaldo(monto, acierto);
-        
-        //Registro del Resultado
+
+        //Creación del Resultado
         Resultado resultado = new Resultado(numeroRuleta, tipo, monto, acierto);
-        historialResultados.add(resultado);
-        
+
+        //El controlador registra el resultado directamente en el Usuario
+        usuario.agregarResultado(resultado);
+
         return resultado;
     }
 
@@ -38,8 +40,10 @@ public class RuletaController {
         return ruleta.depositar(monto);
     }
 
-    //Getters
+    // Getters para la Vista.
     public int getSaldoActual() { return ruleta.getSaldo(); }
     public String obtenerColor(int numero) { return ruleta.getColor(numero); }
-    public List<Resultado> getHistorialResultados() { return historialResultados; }
+
+    //Obtiene el historial directamente del Usuario.
+    public List<Resultado> getHistorialResultados() { return usuario.getHistorial(); }
 }
