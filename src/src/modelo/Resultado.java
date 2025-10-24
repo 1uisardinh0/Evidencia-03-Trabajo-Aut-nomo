@@ -1,4 +1,4 @@
-package Modelo;
+package modelo;
 
 public class Resultado {
     private final int numeroRuleta;

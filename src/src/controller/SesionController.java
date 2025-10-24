@@ -1,8 +1,9 @@
 package controller;
 
-import Modelo.Usuario;
 import java.util.ArrayList;
 import java.util.List;
+
+import modelo.Usuario;
 
 public class SesionController {
     private Usuario usuarioActual;

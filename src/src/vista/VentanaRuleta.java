@@ -1,8 +1,9 @@
-package Vista;
+package vista;
 
 import controller.RuletaController;
-import Modelo.Resultado;
-import Modelo.TipoApuesta;
+import controller.ResultadosController;
+import modelo.Resultado;
+import modelo.TipoApuesta;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +13,7 @@ public class VentanaRuleta {
 
     private final JFrame frame = new JFrame("Jugar Ruleta");
     private final RuletaController ruletaController; // Inyección del Controlador
+    private final ResultadosController resultadosController;
     private final VentanaMenu menuPadre;
     
     // UI Components
@@ -26,8 +28,9 @@ public class VentanaRuleta {
     private static final HashMap<String, TipoApuesta> MAPEO_APUESTA = new HashMap<>();
 
     // Constructor
-    public VentanaRuleta(RuletaController ruletaController, VentanaMenu menuPadre) {
+    public VentanaRuleta(RuletaController ruletaController, ResultadosController resultadosController, VentanaMenu menuPadre) {
         this.ruletaController = ruletaController;
+        this.resultadosController = resultadosController;
         this.menuPadre = menuPadre;
         
         inicializarMapeoApuesta();
@@ -137,7 +140,7 @@ public class VentanaRuleta {
             TipoApuesta tipoApuesta = MAPEO_APUESTA.get(seleccionTexto);
             
             // 2. La Vista delega la acción al Controlador
-            Resultado resultado = ruletaController.jugarRonda(tipoApuesta, monto);
+            Resultado resultado = resultadosController.jugarRonda(tipoApuesta, monto);
             
             // 3. La Vista actualiza la salida con el Resultado devuelto por el Controlador
             mostrarResultadoRonda(resultado);

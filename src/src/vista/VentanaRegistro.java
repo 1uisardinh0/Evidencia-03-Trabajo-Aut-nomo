@@ -1,4 +1,4 @@
-package Vista;
+package vista;
 
 import controller.SesionController;
 import javax.swing.*;

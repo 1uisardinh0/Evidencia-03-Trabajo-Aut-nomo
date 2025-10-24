@@ -1,7 +1,9 @@
-package Vista;
+package vista;
 
 import controller.RuletaController;
 import controller.SesionController;
+import controller.ResultadosController;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -10,6 +12,7 @@ public class VentanaMenu {
     private final JFrame frame = new JFrame("Casino Black Cat - Menú Principal");
     private final SesionController sesionController;
     private final RuletaController ruletaController;
+    private final ResultadosController resultadosController;
     
     // UI Components
     private JLabel lblSaldo; 
@@ -18,9 +21,9 @@ public class VentanaMenu {
 
     public VentanaMenu(SesionController sesionController) {
         this.sesionController = sesionController;
-        // Inicializa RuletaController con el Usuario de la sesión
         this.ruletaController = new RuletaController(sesionController.getUsuarioActual()); 
-        
+        this.resultadosController = new ResultadosController(sesionController.getUsuarioActual());  
+
         inicializarComponentes();
         configurarVentana();
         actualizarSaldo();
@@ -63,6 +66,7 @@ public class VentanaMenu {
         JButton btnInicio = new JButton("Inicio");
         JButton btnJugar = new JButton("Jugar Ruleta");
         JButton btnHistorial = new JButton("Historial");
+        JButton btnEstadisticas = new JButton("Estadísticas");
         JButton btnPerfil = new JButton("Perfil"); // Nuevo botón
         JButton btnSalir = new JButton("Salir");
         
@@ -73,12 +77,15 @@ public class VentanaMenu {
         btnHistorial.setMaximumSize(d); btnHistorial.setPreferredSize(d);
         btnPerfil.setMaximumSize(d); btnPerfil.setPreferredSize(d);
         btnSalir.setMaximumSize(d); btnSalir.setPreferredSize(d);
+        btnEstadisticas.setMaximumSize(d); btnEstadisticas.setPreferredSize(d);
         
         panelMenu.add(btnInicio);
         panelMenu.add(Box.createRigidArea(new Dimension(0, 10)));
         panelMenu.add(btnJugar);
         panelMenu.add(Box.createRigidArea(new Dimension(0, 10)));
         panelMenu.add(btnHistorial);
+        panelMenu.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelMenu.add(btnEstadisticas);
         panelMenu.add(Box.createRigidArea(new Dimension(0, 10)));
         panelMenu.add(btnPerfil);
         panelMenu.add(Box.createVerticalGlue()); // Espacio flexible
@@ -88,6 +95,7 @@ public class VentanaMenu {
         btnInicio.addActionListener(e -> cardLayout.show(panelCentral, "Bienvenida"));
         btnJugar.addActionListener(e -> abrirVentanaJuego());
         btnHistorial.addActionListener(e -> mostrarHistorial());
+        btnEstadisticas.addActionListener(e -> abrirVentanaEstadisticas());
         btnPerfil.addActionListener(e -> cardLayout.show(panelCentral, "Perfil"));
         btnSalir.addActionListener(e -> cerrarSesion());
         
@@ -210,29 +218,20 @@ public class VentanaMenu {
 
     private void abrirVentanaJuego() {
         // Pasa el controlador de Ruleta a la vista de juego
-        new VentanaRuleta(ruletaController, this).mostrarVentana();
+        new VentanaRuleta(ruletaController, resultadosController, this).mostrarVentana();
         frame.setVisible(false); // Oculta el menú
     }
 
     private void mostrarHistorial() {
-        // Construye un resumen simple del historial
-        StringBuilder sb = new StringBuilder("Historial de Rondas:\n\n");
-        int contador = 1;
-        
-        // El controlador de ruleta proporciona la lista de objetos Resultado
-        for (Modelo.Resultado r : ruletaController.getHistorialResultados()) {
-            String color = ruletaController.obtenerColor(r.getNumeroRuleta());
-            String resultado = r.isAcierto() ? "GANÓ" : "PERDIÓ";
-            
-            sb.append(String.format("%d. Número: %d (%s) | Apuesta: %s ($%,d) | %s\n", 
-                contador++, r.getNumeroRuleta(), color, r.getTipoApuesta().name(), r.getMontoApostado(), resultado));
-        }
-        
-        // Muestra el historial y el saldo
-        sb.append("\nSaldo Actual: $").append(sesionController.getSaldoActual());
+        // Pasa el controlador de Resultados a la vista de historial
+        new VentanaHistorial(resultadosController, this).mostrarVentana();
+        frame.setVisible(false);
+    }
 
-        JOptionPane.showMessageDialog(frame, new JScrollPane(new JTextArea(sb.toString(), 20, 50)),
-            "Historial y Estadísticas", JOptionPane.INFORMATION_MESSAGE);
+    private void abrirVentanaEstadisticas() {
+        // Pasa el controlador de Resultados a la vista de estadísticas
+        new VentanaEstadisticas(resultadosController, this).mostrarVentana();
+        frame.setVisible(false);
     }
     
     private void cerrarSesion() {
