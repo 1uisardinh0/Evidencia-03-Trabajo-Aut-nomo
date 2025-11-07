@@ -1,10 +1,12 @@
 package controller;
 
 import modelo.Ruleta;
-import modelo.TipoApuesta;
-import modelo.Resultado; 
+import modelo.Resultado;
 import modelo.Usuario;
 import modelo.Estadisticas;
+import modelo.ApuestaBase;
+import modelo.ApuestaColor;
+import modelo.ApuestaParidad;
 
 import java.util.List;
 
@@ -23,22 +25,29 @@ public class ResultadosController {
     }
 
     // Método para jugar una ronda y registrar el resultado
-    public Resultado jugarRonda(TipoApuesta tipo, int monto) throws IllegalArgumentException {
+    public Resultado jugarRonda(String tipoApuesta, String valorApuesta, int monto) throws IllegalArgumentException {
         if (monto <= 0 || monto > ruleta.getSaldo()) {
             throw new IllegalArgumentException("Monto inválido o insuficiente.");
         }
 
-        // Lógica y Actualización de Saldo.
+        ApuestaBase apuesta;
+
+        if (tipoApuesta.equals("COLOR")) {
+            apuesta = new ApuestaColor(monto, valorApuesta);
+        } else if (tipoApuesta.equals("PARIDAD")) {
+            apuesta = new ApuestaParidad(monto, valorApuesta);
+        } else {
+            throw new IllegalArgumentException("Tipo de apuesta no reconocido.");
+        }
+
         int numeroRuleta = ruleta.girar();
-        boolean acierto = ruleta.evaluarResultado(numeroRuleta, tipo);
+
+        boolean acierto = ruleta.evaluarResultado(numeroRuleta, apuesta);
         ruleta.actualizarSaldo(monto, acierto);
 
-        // Creación del Resultado.
-        Resultado resultado = new Resultado(numeroRuleta, tipo, monto, acierto);
+        Resultado resultado = new Resultado(numeroRuleta, apuesta, monto, acierto);
 
-        // El controlador registra el resultado en el Usuario (Asociación 1:N).
         usuario.agregarResultado(resultado);
-
         return resultado;
     }
 

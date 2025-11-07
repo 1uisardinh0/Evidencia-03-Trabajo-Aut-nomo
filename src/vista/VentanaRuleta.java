@@ -3,11 +3,9 @@ package vista;
 import controller.RuletaController;
 import controller.ResultadosController;
 import modelo.Resultado;
-import modelo.TipoApuesta;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
 
 public class VentanaRuleta {
 
@@ -24,8 +22,6 @@ public class VentanaRuleta {
     private JLabel lblSaldo;
     private JTextArea txtResultado;
 
-    // Mapeo de opciones de interfaz a tipos de apuesta del ENUM
-    private static final HashMap<String, TipoApuesta> MAPEO_APUESTA = new HashMap<>();
 
     // Constructor
     public VentanaRuleta(RuletaController ruletaController, ResultadosController resultadosController, VentanaMenu menuPadre) {
@@ -33,19 +29,11 @@ public class VentanaRuleta {
         this.resultadosController = resultadosController;
         this.menuPadre = menuPadre;
 
-        inicializarMapeoApuesta();
         inicializarComponentes();
         configurarVentana();
         actualizarSaldo();
     }
 
-    //Inicialización
-    private void inicializarMapeoApuesta() {
-        MAPEO_APUESTA.put("Rojo", TipoApuesta.ROJO);
-        MAPEO_APUESTA.put("Negro", TipoApuesta.NEGRO);
-        MAPEO_APUESTA.put("Par", TipoApuesta.PAR);
-        MAPEO_APUESTA.put("Impar", TipoApuesta.IMPAR);
-    }
 
     private void inicializarComponentes() {
         JPanel panel = new JPanel(new GridBagLayout());
@@ -136,13 +124,26 @@ public class VentanaRuleta {
             int monto = Integer.parseInt(txtMonto.getText());
             String seleccionTexto = (String) cmbSeleccion.getSelectedItem();
 
-            // 1. La Vista traduce la entrada al ENUM del Modelo
-            TipoApuesta tipoApuesta = MAPEO_APUESTA.get(seleccionTexto);
+            if (seleccionTexto == null) {
+                JOptionPane.showMessageDialog(frame, "Seleccione un valor de apuesta (Rojo/Par, etc.).", "Error de Apuesta", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-            // 2. La Vista delega la acción al Controlador
-            Resultado resultado = resultadosController.jugarRonda(tipoApuesta, monto);
-            
-            // 3. La Vista actualiza la salida con el Resultado devuelto por el Controlador
+            String tipoApuesta;
+            String valorApuesta;
+
+            if (seleccionTexto.equals("Rojo") || seleccionTexto.equals("Negro")) {
+                tipoApuesta = "COLOR";
+                valorApuesta = seleccionTexto;
+            } else if (seleccionTexto.equals("Par") || seleccionTexto.equals("Impar")) {
+                tipoApuesta = "PARIDAD";
+                valorApuesta = seleccionTexto;
+            } else {
+                throw new IllegalArgumentException("Selección de apuesta inválida.");
+            }
+
+            Resultado resultado = resultadosController.jugarRonda(tipoApuesta, valorApuesta, monto);
+
             mostrarResultadoRonda(resultado);
             actualizarSaldo();
 
@@ -160,7 +161,7 @@ public class VentanaRuleta {
         txtResultado.append(String.format("\nNúmero %d (%s) | Apuesta %s | Monto $%,d | %s | Saldo $%,d",
                 resultado.getNumeroRuleta(),
                 color,
-                resultado.getTipoApuesta().name(),
+                resultado.getApuestaRealizada().getEtiqueta(),
                 resultado.getMontoApostado(),
                 status,
                 ruletaController.getSaldoActual()));

@@ -46,10 +46,7 @@ public class VentanaHistorial {
         panelSur.add(btnVolver);
         frame.add(panelSur, BorderLayout.SOUTH);
     }
-    
-    /**
-     * Recupera los resultados del controlador y los carga en la tabla.
-     */
+
     private void cargarDatosHistorial() {
         DefaultTableModel model = (DefaultTableModel) tablaHistorial.getModel();
         model.setRowCount(0); // Limpia datos anteriores
@@ -61,12 +58,14 @@ public class VentanaHistorial {
         for (Resultado r : historial) {
             String color = resultadosController.obtenerColor(r.getNumeroRuleta());
             String resultadoStr = r.isAcierto() ? "GANÓ" : "PERDIÓ";
+
+            String etiquetaApuesta = r.getApuestaRealizada().getEtiqueta();
             
             model.addRow(new Object[]{
                 contador++,
                 r.getNumeroRuleta(),
                 color,
-                r.getTipoApuesta().name(),
+                etiquetaApuesta,
                 String.format("$%,d", r.getMontoApostado()),
                 resultadoStr
             });
