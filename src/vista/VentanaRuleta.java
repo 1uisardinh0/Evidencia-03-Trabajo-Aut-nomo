@@ -52,7 +52,7 @@ public class VentanaRuleta {
         panel.add(lblSaldo, gbc);
 
         // Área de Resultados (Fila 4)
-        txtResultado = new JTextArea(8, 20);
+        txtResultado = new JTextArea(10, 20);
         txtResultado.setEditable(false);
         txtResultado.setText("¡Bienvenido! Haz tu primera apuesta.");
         JScrollPane scrollResult = new JScrollPane(txtResultado);
@@ -123,8 +123,9 @@ public class VentanaRuleta {
         try {
             int monto = Integer.parseInt(txtMonto.getText());
             String seleccionTexto = (String) cmbSeleccion.getSelectedItem();
+            seleccionTexto = seleccionTexto.toUpperCase();
 
-            if (seleccionTexto == null) {
+            if (seleccionTexto.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, "Seleccione un valor de apuesta (Rojo/Par, etc.).", "Error de Apuesta", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -132,10 +133,10 @@ public class VentanaRuleta {
             String tipoApuesta;
             String valorApuesta;
 
-            if (seleccionTexto.equals("Rojo") || seleccionTexto.equals("Negro")) {
+            if (seleccionTexto.equals("ROJO") || seleccionTexto.equals("NEGRO")) {
                 tipoApuesta = "COLOR";
                 valorApuesta = seleccionTexto;
-            } else if (seleccionTexto.equals("Par") || seleccionTexto.equals("Impar")) {
+            } else if (seleccionTexto.equals("PAR") || seleccionTexto.equals("IMPAR")) {
                 tipoApuesta = "PARIDAD";
                 valorApuesta = seleccionTexto;
             } else {

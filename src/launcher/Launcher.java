@@ -4,6 +4,7 @@ import controller.SesionController;
 import vista.VentanaLogin;
 
 public class Launcher {
+    
     public static void main(String[] args) {
         final SesionController sesionController = new SesionController();
 
