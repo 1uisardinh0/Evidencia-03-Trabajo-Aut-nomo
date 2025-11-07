@@ -19,4 +19,9 @@ public class ApuestaParidad extends ApuestaBase {
 
         return esNumeroPar == this.esParidadApostadaPar;
     }
+
+    @Override
+    public double getMultiplicadorGanancia() {
+        return 1.0;
+    }
 }

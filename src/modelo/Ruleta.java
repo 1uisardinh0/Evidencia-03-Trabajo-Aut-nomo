@@ -22,11 +22,11 @@ public class Ruleta {
         return apuesta.evaluar(numeroRuleta);
     }
 
-    public void actualizarSaldo(int monto, boolean acierto) {
+    public void actualizarSaldo(int monto, boolean acierto, double multiplicador) {
         if (acierto) {
-            saldo += monto * MULTIPLICADOR;
+            this.saldo += (int) (monto + multiplicador);
         } else {
-            saldo -= monto;
+            this.saldo -= monto;
         }
     }
 

@@ -3,7 +3,6 @@ package vista;
 import controller.RuletaController;
 import controller.SesionController;
 import controller.ResultadosController;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -19,10 +18,10 @@ public class VentanaMenu {
     private JPanel panelCentral; // Contenedor para el CardLayout
     private CardLayout cardLayout = new CardLayout();
 
-    public VentanaMenu(SesionController sesionController) {
+    public VentanaMenu(RuletaController ruletaController, ResultadosController resultadosController, SesionController sesionController) {
+        this.ruletaController = ruletaController;
+        this.resultadosController = resultadosController;
         this.sesionController = sesionController;
-        this.ruletaController = new RuletaController(sesionController.getUsuarioActual()); 
-        this.resultadosController = new ResultadosController(sesionController.getUsuarioActual());  
 
         inicializarComponentes();
         configurarVentana();
@@ -221,8 +220,8 @@ public class VentanaMenu {
     }
 
     private void mostrarHistorial() {
-        // Pasa el controlador de Resultados a la vista de historial
-        new VentanaHistorial(resultadosController, this).mostrarVentana();
+        VentanaHistorial historial = new VentanaHistorial(resultadosController, this);
+        historial.mostrarVentana();
         frame.setVisible(false);
     }
 

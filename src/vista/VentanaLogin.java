@@ -1,6 +1,10 @@
 package vista;
 
+import controller.ResultadosController;
+import controller.RuletaController;
 import controller.SesionController;
+import modelo.Usuario;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -70,20 +74,28 @@ public class VentanaLogin {
 
     private void intentarLogin() {
         String u = txtUsuario.getText();
-        String p = new String(txtClave.getPassword()); 
+        String p = new String(txtClave.getPassword());
 
-        // 1. El Controlador gestiona la sesión
-        if (sesionController.iniciarSesion(u, p)) {
-            // Caso de éxito: El controlador conoce el usuario
-            mostrarMensajeExito();
-            
-            // 2. Abrir la siguiente Vista (Menú)
-            VentanaMenu menu = new VentanaMenu(sesionController); 
-            menu.mostrarVentana();
-            
-            frame.dispose(); // Cierra el login
-        } else {
-            mostrarMensajeError();
+        try {
+            if (sesionController.iniciarSesion(u, p)) {
+                // 1. OBTENER EL USUARIO AUTENTICADO
+                Usuario usuarioActual = sesionController.getUsuarioActual();
+
+                // 2. CREAR CONTROLADORES DEPENDIENTES DEL USUARIO (YA NO SON NULOS)
+                RuletaController ruletaController = new RuletaController(usuarioActual);
+                ResultadosController resultadosController = new ResultadosController(usuarioActual);
+
+                // 3. CREAR LA VENTANA DE MENÚ E INYECTAR DEPENDENCIAS
+                VentanaMenu menu = new VentanaMenu(ruletaController, resultadosController, sesionController);
+
+                // 4. TRANSICIÓN
+                menu.mostrarVentana();
+                this.frame.setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(frame, "Credenciales incorrectas o usuario no registrado.", "Error de Login", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(frame, "Error: " + e.getMessage(), "Error del Sistema", JOptionPane.ERROR_MESSAGE);
         }
     }
     

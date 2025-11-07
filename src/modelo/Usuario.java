@@ -1,7 +1,5 @@
 package modelo;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Usuario {
@@ -10,20 +8,21 @@ public class Usuario {
     private String nombre;
     private Ruleta ruleta;
 
-    private final List<Resultado> historial = new ArrayList<>();
+    private IRepositorioResultados repositorio;
 
     private Estadisticas estadisticas;
 
-    public Usuario(String username, String password, String nombre){
+    public Usuario(String username, String password, String nombre, IRepositorioResultados repositorio){
         this.username = username;
         this.password = password;
         this.nombre = nombre;
         this.ruleta = new Ruleta(1000);
         this.estadisticas = new Estadisticas();
+        this.repositorio = repositorio;
     }
     
     public Usuario(){
-        this("Invitado", "", "Usuario Invitado");
+        this("Invitado", "", "Usuario Invitado", new RepositorioEnMemoria());
     }
 
     public boolean validarCredenciales(String u, String p){
@@ -31,11 +30,11 @@ public class Usuario {
     }
 
     public void agregarResultado(Resultado r){
-        historial.add(r);
+        this.repositorio.guardarResultado(r);
     }
 
     public List<Resultado> getHistorial() {
-        return Collections.unmodifiableList(historial); 
+        return this.repositorio.obtenerHistorial();
     }
     
     //Getters
@@ -46,6 +45,8 @@ public class Usuario {
     public Ruleta getRuleta(){return ruleta;}
 
     public Estadisticas getEstadisticas(){return estadisticas;}
+
+    public IRepositorioResultados getRepositorio(){return repositorio;}
 
     //Setters
     public void setEstadisticas(Estadisticas estadisticas){

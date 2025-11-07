@@ -13,25 +13,27 @@ import java.util.List;
 // Controlador dedicado a gestionar las operaciones relacionadas con los Resultados de juego.
 public class ResultadosController {
 
-    private Usuario usuario;
-    private Ruleta ruleta;
+    private final Usuario usuario;
+    private final Ruleta ruleta;
     private final int saldoInicialSesion;
 
     // Constructor con párametros
     public ResultadosController(Usuario usuario) {
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuario no puede ser nulo para ResultadosController.");
+        }
+
         this.usuario = usuario;
         this.ruleta = usuario.getRuleta();
-        this.saldoInicialSesion = usuario.getRuleta().getSaldo(); 
+        this.saldoInicialSesion = usuario.getRuleta().getSaldo();
     }
 
-    // Método para jugar una ronda y registrar el resultado
-    public Resultado jugarRonda(String tipoApuesta, String valorApuesta, int monto) throws IllegalArgumentException {
-        if (monto <= 0 || monto > ruleta.getSaldo()) {
-            throw new IllegalArgumentException("Monto inválido o insuficiente.");
+    public Resultado jugarRonda(String tipoApuesta, String valorApuesta, int monto) {
+        if (monto <= 0) {
+            throw new IllegalArgumentException("El monto apostado debe ser positivo.");
         }
 
         ApuestaBase apuesta;
-
         if (tipoApuesta.equals("COLOR")) {
             apuesta = new ApuestaColor(monto, valorApuesta);
         } else if (tipoApuesta.equals("PARIDAD")) {
@@ -40,31 +42,30 @@ public class ResultadosController {
             throw new IllegalArgumentException("Tipo de apuesta no reconocido.");
         }
 
-        int numeroRuleta = ruleta.girar();
+        int numeroRuleta = usuario.getRuleta().girar();
+        boolean acierto = apuesta.evaluar(numeroRuleta);
 
-        boolean acierto = ruleta.evaluarResultado(numeroRuleta, apuesta);
-        ruleta.actualizarSaldo(monto, acierto);
+        usuario.getRuleta().actualizarSaldo(monto, acierto, apuesta.getMultiplicadorGanancia());
 
         Resultado resultado = new Resultado(numeroRuleta, apuesta, monto, acierto);
 
         usuario.agregarResultado(resultado);
+
         return resultado;
     }
 
     public Estadisticas generarEstadisticasSesion() {
         Estadisticas stats = new Estadisticas();
-        
-        // El saldo final es el saldo actual de la Ruleta del usuario
+
         stats.calcularEstadisticas(
             usuario.getHistorial(), 
-            this.saldoInicialSesion, // Saldo al inicio de la sesión
-            ruleta.getSaldo()        // Saldo actual
+            this.saldoInicialSesion,
+            ruleta.getSaldo()
         );
 
         return stats;
     }
-    
-    // Método para obtener el historial de resultados del usuario
+
     public List<Resultado> getHistorialResultados() { 
         return usuario.getHistorial(); 
     }

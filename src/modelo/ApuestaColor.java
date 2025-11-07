@@ -19,4 +19,9 @@ public class ApuestaColor extends ApuestaBase {
 
         return this.colorApostado.equals(colorDelNumero);
     }
+
+    @Override
+    public double getMultiplicadorGanancia() {
+        return 1.0;
+    }
 }

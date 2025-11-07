@@ -11,6 +11,8 @@ public abstract class ApuestaBase {
 
     public abstract boolean evaluar(int numeroRuleta);
 
+    public abstract double getMultiplicadorGanancia();
+
     public int getMonto() {
         return monto;
     }
