@@ -22,7 +22,7 @@ public class Usuario {
     }
     
     public Usuario(){
-        this("Invitado", "", "Usuario Invitado", new RepositorioEnMemoria());
+        this("Invitado", "", "Usuario Invitado", new RepositorioArchivo());
     }
 
     public boolean validarCredenciales(String u, String p){
