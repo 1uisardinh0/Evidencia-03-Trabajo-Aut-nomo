@@ -20,10 +20,6 @@ public class Usuario {
         this.estadisticas = new Estadisticas();
         this.repositorio = repositorio;
     }
-    
-    public Usuario(){
-        this("Invitado", "", "Usuario Invitado", new RepositorioArchivo());
-    }
 
     public boolean validarCredenciales(String u, String p){
         return this.username.equals(u) && this.password.equals(p);

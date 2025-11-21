@@ -141,7 +141,7 @@ public class VentanaMenu {
 
         //Actualizar Nombre.
         JLabel lblNombre = new JLabel("Nombre Completo:");
-        JTextField txtNombre = new JTextField(sesionController.getNombreUsuario(), 20);
+        JTextField txtNombre = new JTextField(sesionController.getNombreUsuario(), 10);
         JButton btnActualizarNombre = new JButton("Actualizar Nombre");
 
         gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 1; panel.add(lblNombre, gbc);
@@ -211,7 +211,6 @@ public class VentanaMenu {
             JOptionPane.showMessageDialog(frame, "Ingrese un monto numérico válido.", "Error de Entrada", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
 
     private void abrirVentanaJuego() {
         // Pasa el controlador de Ruleta a la vista de juego
@@ -233,9 +232,10 @@ public class VentanaMenu {
     
     private void cerrarSesion() {
         sesionController.cerrarSesion();
-        frame.dispose(); //Cierra el menú.
+        frame.setVisible(false); //Cierra el menú.
         //Vuelve a abrir una nueva instancia del Login que ya conoce el controlador.
-        new VentanaLogin(sesionController).mostrarVentana(); 
+        VentanaLogin login = new VentanaLogin(sesionController);
+        login.mostrarVentana();
     }
     
     //Getter para regresar al menú.

@@ -89,6 +89,7 @@ public class VentanaLogin {
                 VentanaMenu menu = new VentanaMenu(ruletaController, resultadosController, sesionController);
 
                 // 4. TRANSICIÓN
+                mostrarMensajeExito();
                 menu.mostrarVentana();
                 this.frame.setVisible(false);
             } else {

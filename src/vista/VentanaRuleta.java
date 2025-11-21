@@ -52,7 +52,7 @@ public class VentanaRuleta {
         panel.add(lblSaldo, gbc);
 
         // Área de Resultados (Fila 4)
-        txtResultado = new JTextArea(10, 20);
+        txtResultado = new JTextArea(10, 40);
         txtResultado.setEditable(false);
         txtResultado.setText("¡Bienvenido! Haz tu primera apuesta.");
         JScrollPane scrollResult = new JScrollPane(txtResultado);

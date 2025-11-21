@@ -1,6 +1,10 @@
 package vista;
 
+import controller.ResultadosController;
+import controller.RuletaController;
 import controller.SesionController;
+import modelo.Usuario;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -92,13 +96,27 @@ public class VentanaRegistro {
             JOptionPane.showMessageDialog(frame, 
                 "Usuario registrado con éxito.", 
                 "Registro OK", JOptionPane.INFORMATION_MESSAGE);
-            
-            volverAlLogin();
+
+            Usuario usuarioActual = sesionController.getUsuarioActual();
+
+            RuletaController ruletaController = new RuletaController(usuarioActual);
+            ResultadosController resultadosController = new ResultadosController(usuarioActual);
+
+            VentanaMenu menu = new VentanaMenu(ruletaController, resultadosController, sesionController);
+
+            menu.mostrarVentana();
+            frame.setVisible(false);
+
+            txtNombre.setText("");
+            txtUsuario.setText("");
+            txtClave.setText("");
+
+            //volverAlLogin();
             
         } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(frame, 
-                e.getMessage(), 
-                "Error de Registro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, e.getMessage(), "Error de Validación", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(frame, "Error inesperado al registrar: " + e.getMessage(), "Error General", JOptionPane.ERROR_MESSAGE);
         }
     }
 

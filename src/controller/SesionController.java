@@ -25,6 +25,7 @@ public class SesionController {
         for (Usuario user : usuariosRegistrados){
             if (user.validarCredenciales(u, p)){
                 this.usuarioActual = user;
+                usuarioActual.getRepositorio().cargarDesdeFuente();
                 return true;
             }
         }
@@ -32,9 +33,10 @@ public class SesionController {
     }
 
     public void registrarUsuario(String u, String p, String n) throws IllegalArgumentException {
-        if (u.isBlank() || p.isBlank() || n.isBlank()) {
+        if (u == null || u.isBlank() || p == null || p.isBlank() || n == null || n.isBlank()) {
             throw new IllegalArgumentException("Todos los campos son requeridos.");
         }
+
         usuariosRegistrados.add(new Usuario(u, p, n, null));
 
         IRepositorioResultados repositorio;
@@ -45,6 +47,9 @@ public class SesionController {
         }
 
         Usuario nuevoUsuario = new Usuario(u, p, n, repositorio);
+
+        this.usuariosRegistrados.add(nuevoUsuario);
+        this.usuarioActual = nuevoUsuario;
     }
 
     // --- Getters para la Vista ---
